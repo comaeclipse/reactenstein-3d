@@ -274,6 +274,138 @@ const generateTextures = (): TexturePack => {
   }
   walls[6] = torchFrames;
 
+  // 7: Propaganda Poster Wall 1 - Eagle Emblem
+  const t7 = createCanvas();
+  const ctx7 = t7.getContext('2d')!;
+
+  // Stone background
+  drawStone(ctx7);
+
+  // Poster frame (dark wood)
+  ctx7.fillStyle = '#2a1810';
+  ctx7.fillRect(size/4, size/6, size/2, size*2/3);
+
+  // Poster background (aged paper)
+  ctx7.fillStyle = '#e8d5b7';
+  ctx7.fillRect(size/4 + 2, size/6 + 2, size/2 - 4, size*2/3 - 4);
+
+  // Red banner top
+  ctx7.fillStyle = '#b71c1c';
+  ctx7.fillRect(size/4 + 4, size/6 + 4, size/2 - 8, 8);
+
+  // Black eagle silhouette
+  ctx7.fillStyle = '#000';
+  const eagleX = size/2;
+  const eagleY = size/2.5;
+  ctx7.beginPath();
+  ctx7.moveTo(eagleX, eagleY);
+  ctx7.lineTo(eagleX - 8, eagleY + 6);
+  ctx7.lineTo(eagleX - 12, eagleY + 4);
+  ctx7.lineTo(eagleX - 8, eagleY + 8);
+  ctx7.lineTo(eagleX, eagleY + 12);
+  ctx7.lineTo(eagleX + 8, eagleY + 8);
+  ctx7.lineTo(eagleX + 12, eagleY + 4);
+  ctx7.lineTo(eagleX + 8, eagleY + 6);
+  ctx7.closePath();
+  ctx7.fill();
+
+  // Eagle head
+  ctx7.beginPath();
+  ctx7.arc(eagleX, eagleY - 2, 4, 0, Math.PI * 2);
+  ctx7.fill();
+
+  // Bold text stripes
+  ctx7.fillStyle = '#000';
+  ctx7.fillRect(size/4 + 8, size/2 + 8, size/2 - 16, 2);
+  ctx7.fillRect(size/4 + 8, size/2 + 12, size/2 - 16, 2);
+  ctx7.fillRect(size/4 + 8, size/2 + 16, size/2 - 16, 2);
+
+  walls[7] = t7;
+
+  // 8: Propaganda Poster Wall 2 - "ACHTUNG!" Warning
+  const t8 = createCanvas();
+  const ctx8 = t8.getContext('2d')!;
+
+  // Stone background
+  drawStone(ctx8);
+
+  // Poster frame
+  ctx8.fillStyle = '#2a1810';
+  ctx8.fillRect(size/4, size/6, size/2, size*2/3);
+
+  // Poster background (yellow warning)
+  ctx8.fillStyle = '#ffd600';
+  ctx8.fillRect(size/4 + 2, size/6 + 2, size/2 - 4, size*2/3 - 4);
+
+  // Black border
+  ctx8.strokeStyle = '#000';
+  ctx8.lineWidth = 3;
+  ctx8.strokeRect(size/4 + 4, size/6 + 4, size/2 - 8, size*2/3 - 8);
+
+  // Warning symbol (triangle with exclamation)
+  ctx8.fillStyle = '#000';
+  ctx8.beginPath();
+  const triX = size/2;
+  const triY = size/3.5;
+  ctx8.moveTo(triX, triY);
+  ctx8.lineTo(triX - 10, triY + 16);
+  ctx8.lineTo(triX + 10, triY + 16);
+  ctx8.closePath();
+  ctx8.stroke();
+  ctx8.fillStyle = '#ffd600';
+  ctx8.fill();
+
+  // Exclamation mark
+  ctx8.fillStyle = '#000';
+  ctx8.fillRect(triX - 1.5, triY + 4, 3, 8);
+  ctx8.fillRect(triX - 1.5, triY + 13, 3, 2);
+
+  // Text lines (simulated "ACHTUNG")
+  ctx8.fillStyle = '#000';
+  for (let i = 0; i < 4; i++) {
+    ctx8.fillRect(size/4 + 10, size/2 + i * 4, size/2 - 20, 2);
+  }
+
+  walls[8] = t8;
+
+  // 9: Propaganda Poster Wall 3 - Red/Black Geometric
+  const t9 = createCanvas();
+  const ctx9 = t9.getContext('2d')!;
+
+  // Stone background
+  drawStone(ctx9);
+
+  // Poster frame
+  ctx9.fillStyle = '#2a1810';
+  ctx9.fillRect(size/4, size/6, size/2, size*2/3);
+
+  // Poster background (red)
+  ctx9.fillStyle = '#d32f2f';
+  ctx9.fillRect(size/4 + 2, size/6 + 2, size/2 - 4, size*2/3 - 4);
+
+  // Black diagonal stripes
+  ctx9.fillStyle = '#000';
+  for (let i = 0; i < 5; i++) {
+    ctx9.save();
+    ctx9.translate(size/2, size/2);
+    ctx9.rotate((Math.PI / 4) + (i * Math.PI / 8));
+    ctx9.fillRect(-size/3, -2, size*2/3, 4);
+    ctx9.restore();
+  }
+
+  // White circle center
+  ctx9.fillStyle = '#fff';
+  ctx9.beginPath();
+  ctx9.arc(size/2, size/2, 8, 0, Math.PI * 2);
+  ctx9.fill();
+
+  // Black center star/cross
+  ctx9.fillStyle = '#000';
+  ctx9.fillRect(size/2 - 6, size/2 - 1, 12, 2);
+  ctx9.fillRect(size/2 - 1, size/2 - 6, 2, 12);
+
+  walls[9] = t9;
+
 
   // FLOOR: Cobblestone
   const tFloor = createCanvas();
