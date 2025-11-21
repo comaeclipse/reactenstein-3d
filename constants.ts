@@ -1,4 +1,4 @@
-import { GameSettings, WorldMap } from './types';
+import { GameSettings, WorldMap, Sprite } from './types';
 
 export const TEXTURE_SIZE = 64;
 
@@ -76,3 +76,10 @@ export const COLORS = {
   WALL_4: '#FFFFFF', // White
   WALL_5: '#FFFF00', // Yellow
 };
+
+// Sprites: 0 = table, 1 = grenades, 2 = gun
+export const SPRITES: Sprite[] = [
+  { x: 21.5, y: 18.5, texture: 0 }, // Table in weapons cache
+  { x: 21.3, y: 18.5, texture: 1 }, // Grenades on table
+  { x: 21.7, y: 18.5, texture: 2 }, // Gun on table
+];

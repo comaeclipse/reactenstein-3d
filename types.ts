@@ -15,3 +15,9 @@ export interface GameSettings {
 }
 
 export type WorldMap = number[][];
+
+export interface Sprite {
+  x: number;
+  y: number;
+  texture: number;
+}
