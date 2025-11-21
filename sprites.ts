@@ -1,4 +1,35 @@
 import { TEXTURE_SIZE } from './constants';
+import grenadeVox from './assets/grenade.json';
+
+type Voxel = { id: number; x: number; y: number; z: number; c: string };
+
+const generateVoxelSprite = (voxels: Voxel[], options?: { unit?: number }): HTMLCanvasElement => {
+  const size = TEXTURE_SIZE;
+  const unit = options?.unit ?? 4; // pixels per voxel unit
+  const c = document.createElement('canvas');
+  c.width = size;
+  c.height = size;
+  const ctx = c.getContext('2d')!;
+  ctx.clearRect(0, 0, size, size);
+  ctx.imageSmoothingEnabled = false;
+
+  const centerX = Math.floor(size / 2);
+  const baseY = size - 8; // leave a small bottom margin
+
+  // Draw back-to-front by z to approximate depth
+  const sorted = [...voxels].sort((a, b) => (a.z - b.z));
+  for (const v of sorted) {
+    const color = v.c?.toLowerCase?.() ?? '#000000';
+    // Treat pure black as transparent/empty
+    if (color === '#000000') continue;
+    ctx.fillStyle = color;
+    const px = centerX + v.x * unit;
+    const py = baseY - v.y * unit;
+    ctx.fillRect(px, py - unit + 1, unit, unit); // slight +1 to tighten seams
+  }
+
+  return c;
+};
 
 export const generateSpriteTextures = (): Record<number, HTMLCanvasElement> => {
   const size = TEXTURE_SIZE;
@@ -53,48 +84,8 @@ export const generateSpriteTextures = (): Record<number, HTMLCanvasElement> => {
 
   sprites[0] = sTable;
 
-  // 1: Grenades (stick grenades)
-  const sGrenades = createCanvas();
-  const ctxG = sGrenades.getContext('2d')!;
-  ctxG.clearRect(0, 0, size, size);
-
-  // Draw 2 stick grenades overlapping
-  const drawGrenade = (x: number, y: number, angle: number) => {
-    ctxG.save();
-    ctxG.translate(x, y);
-    ctxG.rotate(angle);
-
-    // Handle (stick)
-    ctxG.fillStyle = '#5C3D0D';
-    ctxG.fillRect(-2, 0, 4, 20);
-
-    // Highlight on handle
-    ctxG.fillStyle = '#7A5210';
-    ctxG.fillRect(-2, 0, 1, 20);
-
-    // Head (explosive)
-    ctxG.fillStyle = '#2F4F2F';
-    ctxG.fillRect(-5, -8, 10, 8);
-
-    // Metal cap
-    ctxG.fillStyle = '#555';
-    ctxG.fillRect(-5, -9, 10, 1);
-
-    // Fuse
-    ctxG.strokeStyle = '#8B4513';
-    ctxG.lineWidth = 1;
-    ctxG.beginPath();
-    ctxG.moveTo(0, -9);
-    ctxG.lineTo(-3, -12);
-    ctxG.stroke();
-
-    ctxG.restore();
-  };
-
-  drawGrenade(size/2 - 8, size/2, -0.3);
-  drawGrenade(size/2 + 8, size/2, 0.2);
-
-  sprites[1] = sGrenades;
+  // 1: Grenade from voxel model
+  sprites[1] = generateVoxelSprite(grenadeVox as Voxel[], { unit: 4 });
 
   // 2: Machine Gun (MP40-style)
   const sGun = createCanvas();
