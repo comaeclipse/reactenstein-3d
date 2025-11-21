@@ -102,7 +102,7 @@ function App() {
                 <span className="text-white text-sm ml-2">{(Math.atan2(playerState.dirY, playerState.dirX) * (180/Math.PI)).toFixed(0)}°</span>
               </div>
               <div className="text-gray-500 text-xs mt-1">
-                WASD/ARROWS: MOVE | Q/E: TURN
+                W/S: MOVE | A/D: TURN
               </div>
             </div>
           </div>

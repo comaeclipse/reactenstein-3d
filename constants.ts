@@ -34,7 +34,7 @@ export const WORLD_MAP: WorldMap = [
 export const SETTINGS: GameSettings = {
   screenWidth: 640,
   screenHeight: 480,
-  moveSpeed: 0.08,
+  moveSpeed: 0.05,
   rotSpeed: 0.05,
 };
 

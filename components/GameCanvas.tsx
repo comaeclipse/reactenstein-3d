@@ -108,64 +108,162 @@ const generateTextures = (): TexturePack => {
 
   // 6: Torch Wall (Animated)
   const torchFrames: HTMLCanvasElement[] = [];
-  for (let frame = 0; frame < 3; frame++) {
+  for (let frame = 0; frame < 4; frame++) {
       const tf = createCanvas();
       const tCtx = tf.getContext('2d')!;
-      
-      // Base: Grey Stone
+
+      // Base: Grey Stone with depth
       drawStone(tCtx);
 
-      // Torch Holder (Wood & Iron)
+      // Torch Holder (Wood & Iron) - positioned higher and larger
       const cx = size / 2;
-      const cy = size / 1.8;
+      const cy = size / 2.2;
 
-      // Bracket
-      tCtx.fillStyle = '#222'; // Iron black
-      tCtx.fillRect(cx - 4, cy + 10, 8, 8);
-      tCtx.beginPath();
-      tCtx.moveTo(cx, cy + 14);
-      tCtx.lineTo(cx - 6, cy + 20); // Mounting bracket left
-      tCtx.stroke();
-      
-      // Holder Stick
+      // Wall mount bracket with 3D effect
+      // Back mounting plate
+      tCtx.fillStyle = '#1a1a1a';
+      tCtx.fillRect(cx - 8, cy + 8, 16, 14);
+
+      // Bracket shadows for depth
+      tCtx.fillStyle = '#0a0a0a';
+      tCtx.fillRect(cx - 7, cy + 9, 2, 12);
+      tCtx.fillRect(cx - 8, cy + 20, 16, 2);
+
+      // Bracket highlights
+      tCtx.fillStyle = '#3a3a3a';
+      tCtx.fillRect(cx - 8, cy + 8, 16, 2);
+      tCtx.fillRect(cx - 8, cy + 8, 2, 14);
+
+      // Side brackets
+      tCtx.fillStyle = '#222';
+      tCtx.fillRect(cx - 6, cy + 10, 3, 10);
+      tCtx.fillRect(cx + 3, cy + 10, 3, 10);
+
+      // Torch stick with 3D shading
+      const stickWidth = 7;
+      const stickHeight = 16;
+
+      // Stick shadow
+      tCtx.fillStyle = '#5a3520';
+      tCtx.fillRect(cx - stickWidth/2 + 1, cy - 2, stickWidth, stickHeight);
+
+      // Stick main
       tCtx.fillStyle = '#8B4513';
-      tCtx.fillRect(cx - 3, cy, 6, 12);
-      
-      // Bowl
-      tCtx.fillStyle = '#444'; // Iron bowl
+      tCtx.fillRect(cx - stickWidth/2, cy - 3, stickWidth, stickHeight);
+
+      // Stick highlight (left side for 3D)
+      tCtx.fillStyle = '#a66329';
+      tCtx.fillRect(cx - stickWidth/2, cy - 3, 2, stickHeight);
+
+      // Stick dark side (right)
+      tCtx.fillStyle = '#6a3510';
+      tCtx.fillRect(cx + stickWidth/2 - 2, cy - 3, 2, stickHeight);
+
+      // Iron bowl/holder at top with metallic shading
+      const bowlY = cy - 4;
+
+      // Bowl shadow
+      tCtx.fillStyle = '#1a1a1a';
       tCtx.beginPath();
-      tCtx.arc(cx, cy, 6, 0, Math.PI, false);
+      tCtx.ellipse(cx, bowlY, 9, 5, 0, 0, Math.PI * 2);
       tCtx.fill();
 
-      // Fire Animation
-      // Core
-      tCtx.fillStyle = '#FFFF00'; // Yellow
+      // Bowl main
+      tCtx.fillStyle = '#333';
       tCtx.beginPath();
-      tCtx.arc(cx, cy - 4, 5, 0, Math.PI * 2);
+      tCtx.ellipse(cx, bowlY - 1, 8, 4, 0, 0, Math.PI * 2);
       tCtx.fill();
 
-      // Flames
-      const flameHeight = 15;
-      const flameWidth = 10;
-      
-      for(let i=0; i<30; i++) {
-          const partX = cx + (Math.random() - 0.5) * flameWidth;
-          const partY = cy - 4 - Math.random() * flameHeight;
-          const sizePart = Math.random() * 4;
-          
-          // Color gradient based on height
-          const hRatio = (cy - partY) / flameHeight; // 0 at bottom, 1 at top
-          
-          if (hRatio < 0.3) tCtx.fillStyle = '#FFFF00'; // Yellow base
-          else if (hRatio < 0.7) tCtx.fillStyle = '#FF8C00'; // Orange mid
-          else tCtx.fillStyle = '#FF0000'; // Red top
+      // Bowl rim highlight
+      tCtx.fillStyle = '#555';
+      tCtx.beginPath();
+      tCtx.ellipse(cx, bowlY - 2, 8, 3, 0, 0, Math.PI);
+      tCtx.fill();
 
-          // Add some flickering randomness based on frame
-          if (Math.random() > 0.2) {
-              tCtx.fillRect(partX, partY - (Math.random() * 2 * frame), sizePart, sizePart);
-          }
+      // Bowl inner shadow
+      tCtx.fillStyle = '#1a1a1a';
+      tCtx.beginPath();
+      tCtx.ellipse(cx, bowlY - 1, 6, 2, 0, 0, Math.PI * 2);
+      tCtx.fill();
+
+      // Fire Animation with better 3D effect
+      const flameBaseY = bowlY - 6;
+      const flameHeight = 20;
+      const flameWidth = 14;
+      const flicker = frame * 0.5;
+
+      // Glow effect behind flame
+      const glowGradient = tCtx.createRadialGradient(cx, flameBaseY - 8, 0, cx, flameBaseY - 8, 20);
+      glowGradient.addColorStop(0, 'rgba(255, 200, 0, 0.4)');
+      glowGradient.addColorStop(0.5, 'rgba(255, 100, 0, 0.2)');
+      glowGradient.addColorStop(1, 'rgba(255, 0, 0, 0)');
+      tCtx.fillStyle = glowGradient;
+      tCtx.beginPath();
+      tCtx.arc(cx, flameBaseY - 8, 22, 0, Math.PI * 2);
+      tCtx.fill();
+
+      // Draw flame in layers for depth
+      // Back layer (red/orange)
+      for(let i = 0; i < 25; i++) {
+          const angle = (Math.random() - 0.5) * Math.PI / 2;
+          const dist = Math.random() * flameWidth * 0.8;
+          const partX = cx + Math.sin(angle) * dist;
+          const heightFactor = Math.random();
+          const partY = flameBaseY - heightFactor * (flameHeight + flicker);
+          const sizePart = 2 + Math.random() * 3;
+
+          if (heightFactor < 0.4) tCtx.fillStyle = '#FF4500';
+          else if (heightFactor < 0.7) tCtx.fillStyle = '#FF6347';
+          else tCtx.fillStyle = '#FF0000';
+
+          tCtx.globalAlpha = 0.6 + Math.random() * 0.4;
+          tCtx.fillRect(partX, partY, sizePart, sizePart);
       }
-      
+
+      // Middle layer (orange/yellow)
+      for(let i = 0; i < 20; i++) {
+          const angle = (Math.random() - 0.5) * Math.PI / 3;
+          const dist = Math.random() * flameWidth * 0.6;
+          const partX = cx + Math.sin(angle) * dist;
+          const heightFactor = Math.random();
+          const partY = flameBaseY - heightFactor * (flameHeight * 0.9 + flicker);
+          const sizePart = 2 + Math.random() * 3;
+
+          if (heightFactor < 0.5) tCtx.fillStyle = '#FFA500';
+          else tCtx.fillStyle = '#FF8C00';
+
+          tCtx.globalAlpha = 0.7 + Math.random() * 0.3;
+          tCtx.fillRect(partX, partY, sizePart, sizePart);
+      }
+
+      // Front/core layer (bright yellow)
+      for(let i = 0; i < 15; i++) {
+          const angle = (Math.random() - 0.5) * Math.PI / 4;
+          const dist = Math.random() * flameWidth * 0.4;
+          const partX = cx + Math.sin(angle) * dist;
+          const heightFactor = Math.random();
+          const partY = flameBaseY - heightFactor * (flameHeight * 0.7 + flicker * 0.7);
+          const sizePart = 1 + Math.random() * 3;
+
+          if (heightFactor < 0.6) tCtx.fillStyle = '#FFFF00';
+          else tCtx.fillStyle = '#FFD700';
+
+          tCtx.globalAlpha = 0.8 + Math.random() * 0.2;
+          tCtx.fillRect(partX, partY, sizePart, sizePart);
+      }
+
+      // Bright core
+      tCtx.globalAlpha = 1;
+      const coreGradient = tCtx.createRadialGradient(cx, flameBaseY - 3, 0, cx, flameBaseY - 3, 5);
+      coreGradient.addColorStop(0, '#FFFFFF');
+      coreGradient.addColorStop(0.4, '#FFFF99');
+      coreGradient.addColorStop(1, '#FFFF00');
+      tCtx.fillStyle = coreGradient;
+      tCtx.beginPath();
+      tCtx.arc(cx, flameBaseY - 3, 4, 0, Math.PI * 2);
+      tCtx.fill();
+
+      tCtx.globalAlpha = 1;
       torchFrames.push(tf);
   }
   walls[6] = torchFrames;
@@ -263,7 +361,8 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({ onPlayerUpdate }) => {
     const { moveSpeed, rotSpeed } = SETTINGS;
     const map = WORLD_MAP;
 
-    if (input['ArrowLeft'] || input['KeyQ']) {
+    // Rotation controls: A, D, Left Arrow, Right Arrow, Q, E
+    if (input['ArrowLeft'] || input['KeyA'] || input['KeyQ']) {
       const oldDirX = p.dirX;
       p.dirX = p.dirX * Math.cos(rotSpeed) - p.dirY * Math.sin(rotSpeed);
       p.dirY = oldDirX * Math.sin(rotSpeed) + p.dirY * Math.cos(rotSpeed);
@@ -271,7 +370,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({ onPlayerUpdate }) => {
       p.planeX = p.planeX * Math.cos(rotSpeed) - p.planeY * Math.sin(rotSpeed);
       p.planeY = oldPlaneX * Math.sin(rotSpeed) + p.planeY * Math.cos(rotSpeed);
     }
-    if (input['ArrowRight'] || input['KeyE']) {
+    if (input['ArrowRight'] || input['KeyD'] || input['KeyE']) {
       const oldDirX = p.dirX;
       p.dirX = p.dirX * Math.cos(-rotSpeed) - p.dirY * Math.sin(-rotSpeed);
       p.dirY = oldDirX * Math.sin(-rotSpeed) + p.dirY * Math.cos(-rotSpeed);
@@ -282,7 +381,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({ onPlayerUpdate }) => {
 
     const newX = p.x + p.dirX * moveSpeed;
     const newY = p.y + p.dirY * moveSpeed;
-    
+
     if (input['ArrowUp'] || input['KeyW']) {
       if (map[Math.floor(newX)][Math.floor(p.y)] === 0) p.x = newX;
       if (map[Math.floor(p.x)][Math.floor(newY)] === 0) p.y = newY;
@@ -290,20 +389,6 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({ onPlayerUpdate }) => {
     if (input['ArrowDown'] || input['KeyS']) {
        if (map[Math.floor(p.x - p.dirX * moveSpeed)][Math.floor(p.y)] === 0) p.x -= p.dirX * moveSpeed;
        if (map[Math.floor(p.x)][Math.floor(p.y - p.dirY * moveSpeed)] === 0) p.y -= p.dirY * moveSpeed;
-    }
-    
-    if (input['KeyA']) {
-        const strafeDirX = -p.dirY;
-        const strafeDirY = p.dirX;
-        if (map[Math.floor(p.x + strafeDirX * moveSpeed * 0.7)][Math.floor(p.y)] === 0) p.x += strafeDirX * moveSpeed * 0.7;
-        if (map[Math.floor(p.x)][Math.floor(p.y + strafeDirY * moveSpeed * 0.7)] === 0) p.y += strafeDirY * moveSpeed * 0.7;
-    }
-
-    if (input['KeyD']) {
-        const strafeDirX = p.dirY;
-        const strafeDirY = -p.dirX;
-        if (map[Math.floor(p.x + strafeDirX * moveSpeed * 0.7)][Math.floor(p.y)] === 0) p.x += strafeDirX * moveSpeed * 0.7;
-        if (map[Math.floor(p.x)][Math.floor(p.y + strafeDirY * moveSpeed * 0.7)] === 0) p.y += strafeDirY * moveSpeed * 0.7;
     }
   };
 
