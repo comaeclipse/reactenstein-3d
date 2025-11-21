@@ -80,6 +80,6 @@ export const COLORS = {
 // Sprites: 0 = table, 1 = grenades, 2 = gun
 export const SPRITES: Sprite[] = [
   { x: 21.5, y: 18.5, texture: 0 }, // Table in weapons cache
-  { x: 21.3, y: 18.5, texture: 1 }, // Grenades on table
-  { x: 21.7, y: 18.5, texture: 2 }, // Gun on table
+  { x: 21.3, y: 18.5, texture: 1, scale: 0.55, yOffset: -0.35 }, // Grenades on table
+  { x: 21.7, y: 18.5, texture: 2, scale: 0.6, yOffset: -0.35 },  // Gun on table
 ];
