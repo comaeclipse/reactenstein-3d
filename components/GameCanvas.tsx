@@ -910,10 +910,11 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({ onPlayerUpdate }) => {
       const spriteHeight = Math.abs(Math.floor(h / sprite.transformY));
       const spriteWidth = Math.abs(Math.floor(h / sprite.transformY));
 
-      // Anchor sprite to floor instead of centering
-      let drawStartY = h / 2 - spriteHeight;
+      // Anchor sprite bottom slightly below horizon (floor level)
+      const spriteBottom = h / 2 + spriteHeight * 0.15; // 15% below horizon
+      let drawStartY = spriteBottom - spriteHeight;
       if (drawStartY < 0) drawStartY = 0;
-      let drawEndY = h / 2;
+      let drawEndY = spriteBottom;
       if (drawEndY >= h) drawEndY = h - 1;
 
       let drawStartX = -spriteWidth / 2 + spriteScreenX;
