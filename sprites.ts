@@ -1,5 +1,6 @@
 import { TEXTURE_SIZE } from './constants';
 import grenadeVox from './assets/grenade.json';
+import wallItemVox from './assets/wall_item.json';
 
 type Voxel = { id: number; x: number; y: number; z: number; c: string };
 
@@ -134,6 +135,8 @@ export const generateSpriteTextures = (): Record<number, HTMLCanvasElement> => {
 
   sprites[2] = sGun;
 
+  // 3: Wall Item from voxel model
+  sprites[3] = generateVoxelSprite(wallItemVox as Voxel[], { unit: 4 });
+
   return sprites;
 };
-
