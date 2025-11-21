@@ -1,0 +1,5 @@
+{
+  "name": "Reactenstein 3D",
+  "description": "A raycasting engine recreation of the classic Wolfenstein 3D using React and HTML5 Canvas. Features smooth movement, collision detection, and a retro aesthetic.",
+  "requestFramePermissions": []
+}
