@@ -108,12 +108,17 @@ const generateTextures = (): TexturePack => {
 
   // 6: Torch Wall (Animated)
   const torchFrames: HTMLCanvasElement[] = [];
+
+  // Generate stone background ONCE (outside the loop) so it doesn't flicker
+  const torchStoneBase = createCanvas();
+  drawStone(torchStoneBase.getContext('2d')!);
+
   for (let frame = 0; frame < 4; frame++) {
       const tf = createCanvas();
       const tCtx = tf.getContext('2d')!;
 
-      // Base: Grey Stone with depth
-      drawStone(tCtx);
+      // Copy the same stone background for all frames
+      tCtx.drawImage(torchStoneBase, 0, 0);
 
       // Torch Holder (Wood & Iron) - positioned higher and larger
       const cx = size / 2;
