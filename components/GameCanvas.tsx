@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { SETTINGS, WORLD_MAP, COLORS, TEXTURE_SIZE } from '../constants';
+import { SETTINGS, WORLD_MAP, FLOOR_MAP, COLORS, TEXTURE_SIZE } from '../constants';
 import { useInput } from '../hooks/useInput';
 import { PlayerState } from '../types';
 
@@ -10,6 +10,7 @@ interface GameCanvasProps {
 interface TexturePack {
   walls: Record<number, HTMLCanvasElement | HTMLCanvasElement[]>;
   floor: Uint32Array;
+  carpet: Uint32Array;
 }
 
 const generateTextures = (): TexturePack => {
@@ -318,7 +319,63 @@ const generateTextures = (): TexturePack => {
   const floorImgData = ctxF.getImageData(0, 0, size, size);
   const floorPixels = new Uint32Array(floorImgData.data.buffer);
 
-  return { walls, floor: floorPixels };
+  // RED CARPET: Luxurious texture
+  const tCarpet = createCanvas();
+  const ctxC = tCarpet.getContext('2d')!;
+
+  // Base red color
+  ctxC.fillStyle = '#8B0000';
+  ctxC.fillRect(0, 0, size, size);
+
+  // Add fabric weave pattern
+  for (let y = 0; y < size; y += 2) {
+      for (let x = 0; x < size; x += 2) {
+          const shade = Math.random() * 30 - 15;
+          const r = Math.max(0, Math.min(255, 139 + shade));
+          const g = Math.max(0, Math.min(255, 0 + shade * 0.3));
+          const b = Math.max(0, Math.min(255, 0 + shade * 0.3));
+          ctxC.fillStyle = `rgb(${r},${g},${b})`;
+          ctxC.fillRect(x, y, 2, 2);
+      }
+  }
+
+  // Horizontal lines for carpet runner effect
+  ctxC.strokeStyle = '#A00000';
+  ctxC.lineWidth = 1;
+  for (let y = 0; y < size; y += 8) {
+      ctxC.beginPath();
+      ctxC.moveTo(0, y);
+      ctxC.lineTo(size, y);
+      ctxC.stroke();
+  }
+
+  // Darker lines for depth
+  ctxC.strokeStyle = '#600000';
+  for (let y = 4; y < size; y += 8) {
+      ctxC.beginPath();
+      ctxC.moveTo(0, y);
+      ctxC.lineTo(size, y);
+      ctxC.stroke();
+  }
+
+  // Gold trim pattern on edges
+  ctxC.fillStyle = '#DAA520';
+  for (let i = 0; i < size; i += 4) {
+      ctxC.fillRect(i, 0, 2, 2);
+      ctxC.fillRect(i, size - 2, 2, 2);
+  }
+
+  // Ornate pattern in center
+  ctxC.fillStyle = '#B8860B';
+  const centerY = size / 2;
+  for (let x = 0; x < size; x += 8) {
+      ctxC.fillRect(x + 2, centerY - 1, 4, 2);
+  }
+
+  const carpetImgData = ctxC.getImageData(0, 0, size, size);
+  const carpetPixels = new Uint32Array(carpetImgData.data.buffer);
+
+  return { walls, floor: floorPixels, carpet: carpetPixels };
 };
 
 export const GameCanvas: React.FC<GameCanvasProps> = ({ onPlayerUpdate }) => {
@@ -403,7 +460,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({ onPlayerUpdate }) => {
 
     const w = SETTINGS.screenWidth;
     const h = SETTINGS.screenHeight;
-    const { walls, floor: floorPixels } = texturesRef.current;
+    const { walls, floor: floorPixels, carpet: carpetPixels } = texturesRef.current;
 
     // 1. Draw Ceiling
     ctx.fillStyle = COLORS.CEILING;
@@ -442,7 +499,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({ onPlayerUpdate }) => {
         // Get texture coordinates from fractional part of global coordinates
         const cellX = Math.floor(floorX);
         const cellY = Math.floor(floorY);
-        
+
         // Mask with TEXTURE_SIZE - 1 (must be power of 2)
         const tx = Math.floor(TEXTURE_SIZE * (floorX - cellX)) & (TEXTURE_SIZE - 1);
         const ty = Math.floor(TEXTURE_SIZE * (floorY - cellY)) & (TEXTURE_SIZE - 1);
@@ -450,9 +507,16 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({ onPlayerUpdate }) => {
         floorX += floorStepX;
         floorY += floorStepY;
 
-        // Sample texture
-        const color = floorPixels[TEXTURE_SIZE * ty + tx];
-        
+        // Check floor map to determine texture
+        const floorType = (cellX >= 0 && cellX < FLOOR_MAP.length && cellY >= 0 && cellY < FLOOR_MAP[0].length)
+          ? FLOOR_MAP[cellX][cellY]
+          : 0;
+
+        // Sample appropriate texture based on floor type
+        const color = floorType === 1
+          ? carpetPixels[TEXTURE_SIZE * ty + tx]
+          : floorPixels[TEXTURE_SIZE * ty + tx];
+
         // Write to buffer (y is local to floor buffer [0..h/2])
         buffer[y * w + x] = color;
       }
